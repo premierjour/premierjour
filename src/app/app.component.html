@@ -1,13 +1,17 @@
 <ion-header>
   <ion-toolbar>
-    <ion-button *ngIf="(isAdmin$ | async) && !showAddPage" size="small" fill="outline" class="ion-margin-start" (click)="navigateToAdd()">
+    <ion-button *ngIf="(isAdmin$ | async) && !showAddPage && !showEditPage" size="small" fill="outline" class="ion-margin-start" (click)="navigateToAdd()">
       <ion-icon name="add" slot="start"></ion-icon>
     </ion-button>
     <ion-button *ngIf="showAddPage" size="small" fill="outline" class="ion-margin-start" (click)="cancelAdd()">
       <ion-icon name="arrow-back" slot="start"></ion-icon>
       Retour
     </ion-button>
-    <ion-title>{{ showAddPage ? 'Ajouter un document' : 'Documents premier jour' }}</ion-title>
+    <ion-button *ngIf="showEditPage" size="small" fill="outline" class="ion-margin-start" (click)="cancelEdit()">
+      <ion-icon name="arrow-back" slot="start"></ion-icon>
+      Retour
+    </ion-button>
+    <ion-title>{{ showEditPage ? 'Modifier un document' : (showAddPage ? 'Ajouter un document' : 'Documents premier jour') }}</ion-title>
     <!-- Appel du popover -->
     <ion-button id="user-menu-button" fill="clear" *ngIf="session" slot="end">
       <ion-icon name="person-outline"></ion-icon>
@@ -103,8 +107,52 @@
     </ion-button>
   </div>
 
+  <!-- Page de modification de document -->
+  <div *ngIf="session && showEditPage" class="ion-padding">
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">Thème *</ion-label>
+        <ion-input type="text" [(ngModel)]="editDocTheme" placeholder="Ex: Art"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Catégorie *</ion-label>
+        <ion-input type="text" [(ngModel)]="editDocCategory" placeholder="Ex: Peinture"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Nom *</ion-label>
+        <ion-input type="text" [(ngModel)]="editDocNom" placeholder="Nom du document"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Année *</ion-label>
+        <ion-input type="number" [(ngModel)]="editDocAnnee" placeholder="Ex: 2024"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Numéro *</ion-label>
+        <ion-input type="text" [(ngModel)]="editDocNumero" placeholder="Ex: 001"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Lien (optionnel)</ion-label>
+        <ion-input type="url" [(ngModel)]="editDocLien" placeholder="https://..."></ion-input>
+      </ion-item>
+    </ion-list>
+
+    <ion-button expand="block" class="ion-margin-top" (click)="updateDocument()">
+      <ion-icon name="save-outline" slot="start"></ion-icon>
+      Enregistrer les modifications
+    </ion-button>
+
+    <ion-button expand="block" fill="outline" class="ion-margin-top" (click)="cancelEdit()">
+      Annuler
+    </ion-button>
+  </div>
+
   <!-- Interface principale si connecté -->
-  <div *ngIf="session && !showAddPage">
+  <div *ngIf="session && !showAddPage && !showEditPage">
 
     <ion-item class="filter-item">
       <ion-label>Thème</ion-label>
@@ -153,6 +201,11 @@
                   href="https://www.ebay.fr/sch/i.html?_nkw=premier%20jour%20{{document.nom}}" target="_blank"
                   rel="noopener noreferrer">Voir sur Ebay</a></p>
             </ion-label>
+          </ion-col>
+          <ion-col size="auto" *ngIf="isAdmin$ | async">
+            <ion-button fill="clear" size="small" (click)="startEdit(document)">
+              <ion-icon name="create-outline" slot="icon-only" color="primary"></ion-icon>
+            </ion-button>
           </ion-col>
         </ion-row>
       </ion-item>

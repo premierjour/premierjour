@@ -105,6 +105,13 @@ export class SupabaseService {
       .insert([document]);
   }
 
+  updateDocument(id: number, document: { theme: string; categorie: string; nom: string; annee: number; numero: string; lien?: string }) {
+    return this.supabase
+      .from('documents')
+      .update(document)
+      .eq('id', id);
+  }
+
   getThemes() {
     // return this.supabase
     //   .from('distinct_themes')

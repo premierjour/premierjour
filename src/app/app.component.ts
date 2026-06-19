@@ -36,6 +36,15 @@ export class AppComponent implements OnInit {
   newDocNumero: string = '';
   newDocLien: string = '';
 
+  showEditPage: boolean = false;
+  editDocId: number | null = null;
+  editDocTheme: string = '';
+  editDocCategory: string = '';
+  editDocNom: string = '';
+  editDocAnnee: number | null = null;
+  editDocNumero: string = '';
+  editDocLien: string = '';
+
   @ViewChild('paypalContainer') set paypalContainer(content: ElementRef) {
     if (content) {
       if (!this.paypalRendered) {
@@ -225,6 +234,59 @@ export class AppComponent implements OnInit {
     this.newDocAnnee = null;
     this.newDocNumero = '';
     this.newDocLien = '';
+  }
+
+  startEdit(document: any) {
+    this.editDocId = document.id;
+    this.editDocTheme = document.theme || '';
+    this.editDocCategory = document.categorie || '';
+    this.editDocNom = document.nom || '';
+    this.editDocAnnee = document.annee || null;
+    this.editDocNumero = document.numero || '';
+    this.editDocLien = document.lien || '';
+    this.showEditPage = true;
+  }
+
+  cancelEdit() {
+    this.showEditPage = false;
+    this.resetEditForm();
+  }
+
+  async updateDocument() {
+    if (!this.editDocId || !this.editDocTheme || !this.editDocCategory || !this.editDocNom || !this.editDocAnnee || !this.editDocNumero) {
+      alert('Veuillez remplir tous les champs obligatoires.');
+      return;
+    }
+
+    const doc = {
+      theme: this.editDocTheme,
+      categorie: this.editDocCategory,
+      nom: this.editDocNom,
+      annee: this.editDocAnnee,
+      numero: this.editDocNumero,
+      ...(this.editDocLien ? { lien: this.editDocLien } : { lien: null }),
+    };
+
+    const { error } = await this.supabaseService.updateDocument(this.editDocId, doc as any);
+    if (error) {
+      console.error('Erreur modification document:', error);
+      alert('Erreur: ' + error.message);
+    } else {
+      alert('Document modifié avec succès !');
+      this.showEditPage = false;
+      this.resetEditForm();
+      await this.loadDocuments();
+    }
+  }
+
+  private resetEditForm() {
+    this.editDocId = null;
+    this.editDocTheme = '';
+    this.editDocCategory = '';
+    this.editDocNom = '';
+    this.editDocAnnee = null;
+    this.editDocNumero = '';
+    this.editDocLien = '';
   }
 
 }
