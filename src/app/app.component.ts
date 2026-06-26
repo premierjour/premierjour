@@ -24,6 +24,7 @@ export class AppComponent implements OnInit {
   searchSubject = new Subject<string>();
 
   isLoading: boolean = false;
+  isLoadingCategories: boolean = false;
   session: Session | null = null;
   email: string = '';
   authLoading: boolean = false;
@@ -146,11 +147,16 @@ export class AppComponent implements OnInit {
       this.categories = [];
       return;
     }
-    const { data, error } = await this.supabaseService.getCategoriesByTheme(this.selectedTheme);
-    if (error) {
-      console.error('Error fetching categories:', error);
-    } else {
-      this.categories = data.map((d: any) => d.categorie).filter(Boolean);
+    this.isLoadingCategories = true;
+    try {
+      const { data, error } = await this.supabaseService.getCategoriesByTheme(this.selectedTheme);
+      if (error) {
+        console.error('Error fetching categories:', error);
+      } else {
+        this.categories = data.map((d: any) => d.categorie).filter(Boolean);
+      }
+    } finally {
+      this.isLoadingCategories = false;
     }
   }
 
@@ -175,9 +181,8 @@ export class AppComponent implements OnInit {
 
   async onThemeChange() {
     this.selectedCategory = '';
-    await Promise.all([
-      this.loadCategories()
-    ]);
+    this.categories = [];
+    await this.loadCategories();
   }
 
   async onCategoryChange() {

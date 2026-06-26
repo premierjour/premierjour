@@ -292,7 +292,7 @@
                 </ion-item>
               </ion-col>
               <ion-col size="12" size-md="3">
-                <ion-item fill="outline" class="filter-item" [disabled]="!selectedTheme">
+                <ion-item fill="outline" class="filter-item" [disabled]="!selectedTheme || isLoadingCategories">
                   <ion-label position="stacked">Catégorie</ion-label>
                   <ion-select [(ngModel)]="selectedCategory" (ionChange)="onCategoryChange()" interface="popover">
                     <ion-select-option value="">Toutes</ion-select-option>
