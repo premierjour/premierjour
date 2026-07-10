@@ -38,7 +38,7 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build -- --base-href "/premierjour/" --configuration production
+        run: npm run build -- --base-href "${{ secrets.BASE_HREF }}" --configuration production
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
